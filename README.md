@@ -434,8 +434,6 @@ Create a `docker-compose.yml` with the following content and deploy it directly 
 services:
   backend:
     image: ghcr.io/bigbodycobain/shadowbroker-backend:latest
-    expose:
-      - "8000"
     environment:
       - AIS_API_KEY=your_aisstream_key          # Required — get one free at aisstream.io
       - OPENSKY_CLIENT_ID=                       # Optional — higher flight data rate limits
@@ -451,8 +449,6 @@ services:
 
   frontend:
     image: ghcr.io/bigbodycobain/shadowbroker-frontend:latest
-    expose:
-      - "3000"
     environment:
       - BACKEND_URL=${BACKEND_URL:-http://backend:8000}   # Docker internal networking — no rebuild needed
     depends_on:
