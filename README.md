@@ -463,6 +463,8 @@ volumes:
 > **How it works:** `SERVICE_URL_FRONTEND_3000` tells Coolify to generate and proxy a public URL to the frontend's internal port `3000`. `BACKEND_URL` defaults to `http://backend:8000`, which works over the internal Docker network for both local compose and Coolify-managed deployments.
 >
 > `BACKEND_URL` is a plain runtime environment variable (not a build-time `NEXT_PUBLIC_*`), so you can change it in Portainer, Uncloud, or any compose editor without rebuilding the image. Set it to the address where your backend is reachable from inside the Docker network (e.g. `http://backend:8000`, `http://192.168.1.50:8000`).
+>
+> The frontend healthcheck uses a normal `GET /` request rather than a `--spider` probe so Next.js is marked healthy based on an actual page response.
 
 ---
 
