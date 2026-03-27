@@ -450,6 +450,7 @@ services:
   frontend:
     image: ghcr.io/bigbodycobain/shadowbroker-frontend:latest
     environment:
+      - SERVICE_URL_FRONTEND_3000
       - BACKEND_URL=${BACKEND_URL:-http://backend:8000}   # Docker internal networking — no rebuild needed
     depends_on:
       - backend
@@ -459,7 +460,7 @@ volumes:
   backend_data:
 ```
 
-> **How it works:** The frontend container proxies all `/api/*` requests through the Next.js server to `BACKEND_URL` using Docker's internal networking. In Coolify, assign a domain to the `frontend` service and keep `backend` private unless you explicitly want to expose it.
+> **How it works:** `SERVICE_URL_FRONTEND_3000` tells Coolify to generate and proxy a public URL to the frontend's internal port `3000`. The frontend container proxies all `/api/*` requests through the Next.js server to `BACKEND_URL` using Docker's internal networking, so the `backend` service can stay private.
 >
 > `BACKEND_URL` is a plain runtime environment variable (not a build-time `NEXT_PUBLIC_*`), so you can change it in Portainer, Uncloud, or any compose editor without rebuilding the image. Set it to the address where your backend is reachable from inside the Docker network (e.g. `http://backend:8000`, `http://192.168.1.50:8000`).
 

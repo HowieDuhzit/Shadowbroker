@@ -32,6 +32,7 @@ services:
   frontend:
     image: ghcr.io/bigbodycobain/shadowbroker-frontend:latest
     environment:
+      - SERVICE_URL_FRONTEND_3000
       # Points the Next.js server-side proxy at the backend container via Docker networking.
       # Change this if your backend runs on a different host or port.
       - BACKEND_URL=${BACKEND_URL:-http://backend:8000}
