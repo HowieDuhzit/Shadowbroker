@@ -4,6 +4,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 COMPOSE_FILE="$SCRIPT_DIR/docker-compose.yml"
+COMPOSE_OVERRIDE_FILE="$SCRIPT_DIR/docker-compose.override.yml"
 ENGINE="${SHADOWBROKER_CONTAINER_ENGINE:-auto}"
 COMPOSE_ARGS=()
 COMPOSE_PROVIDER=""
@@ -43,6 +44,11 @@ find_podman_compose() {
 if [ ! -f "$COMPOSE_FILE" ]; then
     echo "[!] ERROR: Missing compose file: $COMPOSE_FILE"
     exit 1
+fi
+
+COMPOSE_FILES=(-f "$COMPOSE_FILE")
+if [ -f "$COMPOSE_OVERRIDE_FILE" ]; then
+    COMPOSE_FILES+=(-f "$COMPOSE_OVERRIDE_FILE")
 fi
 
 while [ "$#" -gt 0 ]; do
@@ -113,4 +119,4 @@ else
     echo "[*] Using ($ENGINE): ${COMPOSE_CMD[*]}"
 fi
 
-"${COMPOSE_CMD[@]}" -f "$COMPOSE_FILE" "${COMPOSE_ARGS[@]}"
+"${COMPOSE_CMD[@]}" "${COMPOSE_FILES[@]}" "${COMPOSE_ARGS[@]}"

@@ -387,7 +387,7 @@ The first decentralized intelligence communication layer built directly into an 
 
 ### 🐳 Docker Setup (Recommended for Self-Hosting)
 
-The repo includes a `docker-compose.yml` that pulls pre-built images from the GitHub Container Registry.
+The repo includes a Coolify-friendly `docker-compose.yml` that pulls pre-built images from the GitHub Container Registry. For local development, `docker-compose.override.yml` is applied automatically so the app is still exposed on `localhost`.
 
 ```bash
 git clone https://github.com/BigBodyCobain/Shadowbroker.git
@@ -428,15 +428,14 @@ Open `http://localhost:3000` to view the dashboard.
 
 No need to clone the repo. Use the pre-built images published to the GitHub Container Registry.
 
-Create a `docker-compose.yml` with the following content and deploy it directly — paste it into Portainer's stack editor, `uncloud deploy`, or any Docker host:
+Create a `docker-compose.yml` with the following content and deploy it directly — paste it into Portainer's stack editor, Coolify, `uncloud deploy`, or any Docker host:
 
 ```yaml
 services:
   backend:
     image: ghcr.io/bigbodycobain/shadowbroker-backend:latest
-    container_name: shadowbroker-backend
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"
     environment:
       - AIS_API_KEY=your_aisstream_key          # Required — get one free at aisstream.io
       - OPENSKY_CLIENT_ID=                       # Optional — higher flight data rate limits
@@ -452,11 +451,10 @@ services:
 
   frontend:
     image: ghcr.io/bigbodycobain/shadowbroker-frontend:latest
-    container_name: shadowbroker-frontend
-    ports:
-      - "3000:3000"
+    expose:
+      - "3000"
     environment:
-      - BACKEND_URL=http://backend:8000   # Docker internal networking — no rebuild needed
+      - BACKEND_URL=${BACKEND_URL:-http://backend:8000}   # Docker internal networking — no rebuild needed
     depends_on:
       - backend
     restart: unless-stopped
@@ -465,7 +463,7 @@ volumes:
   backend_data:
 ```
 
-> **How it works:** The frontend container proxies all `/api/*` requests through the Next.js server to `BACKEND_URL` using Docker's internal networking. The browser only ever talks to port 3000 — port 8000 does not need to be exposed externally.
+> **How it works:** The frontend container proxies all `/api/*` requests through the Next.js server to `BACKEND_URL` using Docker's internal networking. In Coolify, assign a domain to the `frontend` service and keep `backend` private unless you explicitly want to expose it.
 >
 > `BACKEND_URL` is a plain runtime environment variable (not a build-time `NEXT_PUBLIC_*`), so you can change it in Portainer, Uncloud, or any compose editor without rebuilding the image. Set it to the address where your backend is reachable from inside the Docker network (e.g. `http://backend:8000`, `http://192.168.1.50:8000`).
 
